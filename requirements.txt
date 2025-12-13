@@ -10,7 +10,7 @@ python-dotenv==1.0.1
 
 # Providers
 openai==1.57.2
-google-generativeai==0.8.3
+google-genai>=1.0.0
 
 # SSE Streaming
 sse-starlette==2.2.1
