@@ -16,10 +16,11 @@ router = APIRouter(prefix="/models", tags=["Models"])
     "",
     response_model=ModelListResponse,
     operation_id="list_models",
-    summary="List available models",
+    summary="List available image generation models",
     description=(
-        "Get list of available image generation models. "
-        "Results are cached and refreshed periodically or on demand."
+        "Get all available image generation models with their capabilities. "
+        "Call this first to discover which models are available. "
+        "Returns model IDs (use in /generate), supported aspect ratios, and quality options."
     ),
 )
 async def list_models(_: None = Depends(verify_token)) -> ModelListResponse:
@@ -44,6 +45,7 @@ async def list_models(_: None = Depends(verify_token)) -> ModelListResponse:
         "Force refresh of available models from LiteLLM. "
         "Use this to reload models after configuration changes."
     ),
+    include_in_schema=False,  # Admin operation, not for function calling
 )
 async def refresh_models(
     request: ModelRefreshRequest = ModelRefreshRequest(), _: None = Depends(verify_token)

@@ -10,7 +10,7 @@ class ImageRequest(BaseModel):
 
     prompt: str = Field(
         ...,
-        description="Detailed description of the image to generate",
+        description="Detailed description of the image to generate. Be specific about style, colors, composition, and mood.",
         min_length=1,
         max_length=4000,
         examples=["A serene mountain landscape at sunset with vibrant colors"],
@@ -19,20 +19,19 @@ class ImageRequest(BaseModel):
     provider: Literal["litellm", "openai", "gemini"] = Field(
         default="litellm",
         description=(
-            "Image generation provider. "
-            "'litellm' uses LiteLLM proxy (recommended for cost tracking), "
-            "'openai' and 'gemini' are direct API fallbacks"
+            "Image generation provider. Use 'litellm' (default) which routes to all available models. "
+            "Only use 'openai' or 'gemini' as direct fallback if LiteLLM is unavailable."
         ),
     )
 
     model: Optional[str] = Field(
         default=None,
         description=(
-            "Model to use. If not specified, uses provider's default. "
-            "Examples: 'dall-e-3', 'gpt-image-1', 'gemini-2.0-flash-preview-image-generation', "
-            "'imagen-3.0-generate-002'"
+            "Model ID for image generation. Call GET /models to see all available models. "
+            "Common models: 'openai/dall-e-3' (high quality), 'openai/gpt-image-1' (fast), "
+            "'gemini/gemini-2.5-flash-image'. Models use 'provider/model-name' format."
         ),
-        examples=["dall-e-3"],
+        examples=["openai/dall-e-3", "openai/gpt-image-1", "gemini/gemini-2.5-flash-image"],
     )
 
     aspect_ratio: Literal["1:1", "16:9", "9:16", "4:3", "3:4"] = Field(

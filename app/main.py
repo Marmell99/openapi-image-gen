@@ -95,3 +95,45 @@ async def root():
             "gemini": settings.gemini_available,
         },
     }
+
+
+def custom_openapi():
+    """
+    Custom OpenAPI schema that includes available models in the description.
+    """
+    if app.openapi_schema:
+        return app.openapi_schema
+
+    from fastapi.openapi.utils import get_openapi
+
+    openapi_schema = get_openapi(
+        title=app.title,
+        version=app.version,
+        description=app.description,
+        routes=app.routes,
+    )
+
+    # Get available models and add to schema description
+    available_models = model_registry.get_models()
+    if available_models:
+        image_models = [m.id for m in available_models if "image" in m.id.lower() or "dall" in m.id.lower()]
+        if not image_models:
+            image_models = [m.id for m in available_models[:10]]  # First 10 as fallback
+
+        models_list = ", ".join(f"'{m}'" for m in image_models)
+
+        # Update the model field description in ImageRequest schema
+        if "components" in openapi_schema and "schemas" in openapi_schema["components"]:
+            if "ImageRequest" in openapi_schema["components"]["schemas"]:
+                props = openapi_schema["components"]["schemas"]["ImageRequest"].get("properties", {})
+                if "model" in props:
+                    props["model"]["description"] = (
+                        f"Model ID for image generation. Available models: {models_list}. "
+                        "Use 'openai/dall-e-3' for high quality, 'openai/gpt-image-1' for fast generation."
+                    )
+
+    app.openapi_schema = openapi_schema
+    return app.openapi_schema
+
+
+app.openapi = custom_openapi
