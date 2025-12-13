@@ -18,6 +18,7 @@ Production-ready OpenAPI server for AI image generation with LiteLLM proxy integ
 ### Docker (Recommended)
 
 1. Clone and configure:
+
 ```bash
 git clone <your-repo>
 cd openapi-image-gen
@@ -26,33 +27,38 @@ cp .env.example .env
 ```
 
 2. Start the server:
+
 ```bash
 docker-compose up -d
 ```
 
 3. Access the API:
+
 - API Docs: http://localhost:8000/docs
 - Health Check: http://localhost:8000/health
 
 ### Manual Setup
 
 1. Install dependencies:
-```bash
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-pip install -r requirements.txt
-```
+
+    ```bash
+    python -m venv venv
+    source venv/bin/activate  # Windows: venv\Scripts\activate
+    pip install -r requirements.txt
+    ```
 
 2. Configure environment:
-```bash
-cp .env.example .env
-# Edit .env with your configuration
-```
+
+    ```bash
+    cp .env.example .env
+    # Edit .env with your configuration
+    ```
 
 3. Run the server:
-```bash
-uvicorn app.main:app --reload
-```
+
+    ```bash
+    uvicorn app.main:app --reload
+    ```
 
 ## API Examples
 
@@ -129,11 +135,13 @@ GEMINI_API_KEY=...
 ## Supported Models
 
 ### OpenAI
+
 - **dall-e-3**: HD quality, multiple aspect ratios, n=1 only
 - **gpt-image-1**: Newest model, multiple sizes
 - **dall-e-2**: Square only, fast generation
 
 ### Google Gemini
+
 - **gemini-2.0-flash-preview-image-generation**: Fast generation
 - **imagen-3.0-generate-002**: High quality
 
@@ -152,15 +160,18 @@ For admin/global tools, configure in Admin Settings with server-accessible URL.
 ## API Endpoints
 
 ### Image Generation
+
 - `POST /generate` - Generate image (JSON response)
 - `POST /generate-stream` - Generate with SSE progress
 - `POST /generate-preview` - Generate with HTML preview
 
 ### Model Management
+
 - `GET /models` - List available models
 - `POST /models/refresh` - Refresh model list from LiteLLM
 
 ### Health & Info
+
 - `GET /health` - Health check + provider status
 - `GET /` - API information
 - `GET /docs` - Interactive API documentation
@@ -168,6 +179,7 @@ For admin/global tools, configure in Admin Settings with server-accessible URL.
 ## Configuration
 
 See [CONFIGURATION.md](CONFIGURATION.md) for complete configuration guide including:
+
 - Environment variables
 - Model capabilities
 - Provider setup
@@ -177,11 +189,13 @@ See [CONFIGURATION.md](CONFIGURATION.md) for complete configuration guide includ
 ## Testing
 
 Run tests:
+
 ```bash
 pytest
 ```
 
 With coverage:
+
 ```bash
 pytest --cov=app --cov-report=html
 ```
@@ -189,7 +203,8 @@ pytest --cov=app --cov-report=html
 ## Development
 
 Project structure:
-```
+
+```txt
 app/
 ├── main.py              # FastAPI application
 ├── core/                # Configuration & utilities
@@ -208,6 +223,7 @@ MIT
 ## Contributing
 
 Contributions welcome! Please ensure:
+
 - Tests pass (`pytest`)
 - Code follows project style
 - Documentation updated

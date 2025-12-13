@@ -1,9 +1,8 @@
+from unittest.mock import AsyncMock, MagicMock, patch
+
 import pytest
-from unittest.mock import patch, AsyncMock
-import httpx
 
 from app.services.model_registry import ModelRegistry
-from app.schemas.responses import ModelInfo, ModelCapabilities
 
 
 @pytest.mark.asyncio
@@ -18,16 +17,21 @@ async def test_load_from_litellm(mock_litellm_models_response):
         mock_settings.LITELLM_API_KEY = None
         mock_settings.litellm_available = True
 
-        with patch("httpx.AsyncClient") as mock_client:
-            mock_response = AsyncMock()
-            mock_response.status_code = 200
-            mock_response.json.return_value = mock_litellm_models_response
-            mock_response.raise_for_status = AsyncMock()
+        # Create mock response
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = mock_litellm_models_response
+        mock_response.raise_for_status.return_value = None
 
-            mock_client.return_value.__aenter__.return_value.get = AsyncMock(
-                return_value=mock_response
-            )
+        # Create async client mock
+        mock_client_instance = MagicMock()
+        mock_client_instance.get = AsyncMock(return_value=mock_response)
 
+        mock_client = MagicMock()
+        mock_client.__aenter__ = AsyncMock(return_value=mock_client_instance)
+        mock_client.__aexit__ = AsyncMock(return_value=None)
+
+        with patch("app.services.model_registry.httpx.AsyncClient", return_value=mock_client):
             models = await registry.load_models()
 
             assert len(models) == 3

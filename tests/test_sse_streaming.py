@@ -1,8 +1,9 @@
-import pytest
 import json
 from unittest.mock import AsyncMock
 
-from app.utils.sse import generate_with_progress, SSEEvent
+import pytest
+
+from app.utils.sse import SSEEvent, generate_with_progress
 
 
 @pytest.mark.asyncio
@@ -24,6 +25,7 @@ async def test_generate_with_progress_success():
     """
     Test SSE generator with successful generation.
     """
+
     # Mock service function
     async def mock_service_func(prompt, model, **kwargs):
         return ["http://example.com/image.png"]
@@ -31,10 +33,7 @@ async def test_generate_with_progress_success():
     # Collect events
     events = []
     async for event_str in generate_with_progress(
-        prompt="test prompt",
-        model="dall-e-3",
-        provider="openai",
-        service_func=mock_service_func
+        prompt="test prompt", model="dall-e-3", provider="openai", service_func=mock_service_func
     ):
         events.append(event_str)
 
@@ -63,6 +62,7 @@ async def test_generate_with_progress_error():
     """
     Test SSE generator with error.
     """
+
     # Mock service function that raises error
     async def mock_service_func(prompt, model, **kwargs):
         raise ValueError("Test error")
@@ -70,10 +70,7 @@ async def test_generate_with_progress_error():
     # Collect events
     events = []
     async for event_str in generate_with_progress(
-        prompt="test prompt",
-        model="dall-e-3",
-        provider="openai",
-        service_func=mock_service_func
+        prompt="test prompt", model="dall-e-3", provider="openai", service_func=mock_service_func
     ):
         events.append(event_str)
 
@@ -98,16 +95,14 @@ async def test_sse_progress_values():
     """
     Test that progress values increase correctly.
     """
+
     async def mock_service_func(prompt, model, **kwargs):
         return ["http://example.com/image.png"]
 
     # Collect progress values
     progress_values = []
     async for event_str in generate_with_progress(
-        prompt="test",
-        model="test-model",
-        provider="test",
-        service_func=mock_service_func
+        prompt="test", model="test-model", provider="test", service_func=mock_service_func
     ):
         # Parse progress from data
         lines = event_str.strip().split("\n")
@@ -122,5 +117,6 @@ async def test_sse_progress_values():
     assert len(progress_values) > 0
     assert progress_values[0] == 0  # Should start at 0
     assert progress_values[-1] == 100  # Should end at 100
-    assert all(progress_values[i] <= progress_values[i+1]
-               for i in range(len(progress_values)-1))  # Should be non-decreasing
+    assert all(
+        progress_values[i] <= progress_values[i + 1] for i in range(len(progress_values) - 1)
+    )  # Should be non-decreasing
