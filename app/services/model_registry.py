@@ -1,10 +1,11 @@
-import time
-from typing import List, Dict, Optional
-import httpx
 import logging
+import time
+from typing import Dict, List, Optional
+
+import httpx
 
 from app.core.config import settings
-from app.schemas.responses import ModelInfo, ModelCapabilities
+from app.schemas.responses import ModelCapabilities, ModelInfo
 
 logger = logging.getLogger(__name__)
 
@@ -18,29 +19,23 @@ class ModelRegistry:
     # Model capabilities database (fallback for known models)
     KNOWN_CAPABILITIES: Dict[str, ModelCapabilities] = {
         "dall-e-2": ModelCapabilities(
-            supports_quality=False,
-            supports_aspect_ratios=["1:1"],
-            max_images=4
+            supports_quality=False, supports_aspect_ratios=["1:1"], max_images=4
         ),
         "dall-e-3": ModelCapabilities(
-            supports_quality=True,
-            supports_aspect_ratios=["1:1", "16:9", "9:16"],
-            max_images=1
+            supports_quality=True, supports_aspect_ratios=["1:1", "16:9", "9:16"], max_images=1
         ),
         "gpt-image-1": ModelCapabilities(
-            supports_quality=False,
-            supports_aspect_ratios=["1:1", "16:9", "9:16"],
-            max_images=4
+            supports_quality=False, supports_aspect_ratios=["1:1", "16:9", "9:16"], max_images=4
         ),
         "gemini-2.0-flash-preview-image-generation": ModelCapabilities(
             supports_quality=False,
             supports_aspect_ratios=["1:1", "16:9", "9:16", "4:3", "3:4"],
-            max_images=4
+            max_images=4,
         ),
         "imagen-3.0-generate-002": ModelCapabilities(
             supports_quality=False,
             supports_aspect_ratios=["1:1", "16:9", "9:16", "4:3", "3:4"],
-            max_images=4
+            max_images=4,
         ),
     }
 
@@ -136,11 +131,7 @@ class ModelRegistry:
             # Get capabilities
             capabilities = self._get_capabilities(model_id)
 
-            models.append(ModelInfo(
-                id=model_id,
-                provider=provider,
-                capabilities=capabilities
-            ))
+            models.append(ModelInfo(id=model_id, provider=provider, capabilities=capabilities))
 
         return models
 
@@ -153,29 +144,27 @@ class ModelRegistry:
         # OpenAI models
         if settings.openai_available or settings.litellm_available:
             for model_id in ["dall-e-3", "gpt-image-1", "dall-e-2"]:
-                models.append(ModelInfo(
-                    id=model_id,
-                    provider="openai",
-                    capabilities=self.KNOWN_CAPABILITIES.get(
-                        model_id,
-                        ModelCapabilities()
+                models.append(
+                    ModelInfo(
+                        id=model_id,
+                        provider="openai",
+                        capabilities=self.KNOWN_CAPABILITIES.get(model_id, ModelCapabilities()),
                     )
-                ))
+                )
 
         # Gemini models
         if settings.gemini_available or settings.litellm_available:
             for model_id in [
                 "gemini-2.0-flash-preview-image-generation",
-                "imagen-3.0-generate-002"
+                "imagen-3.0-generate-002",
             ]:
-                models.append(ModelInfo(
-                    id=model_id,
-                    provider="gemini",
-                    capabilities=self.KNOWN_CAPABILITIES.get(
-                        model_id,
-                        ModelCapabilities()
+                models.append(
+                    ModelInfo(
+                        id=model_id,
+                        provider="gemini",
+                        capabilities=self.KNOWN_CAPABILITIES.get(model_id, ModelCapabilities()),
                     )
-                ))
+                )
 
         return models
 
@@ -209,7 +198,7 @@ class ModelRegistry:
         return ModelCapabilities(
             supports_quality=False,
             supports_aspect_ratios=["1:1", "16:9", "9:16", "4:3", "3:4"],
-            max_images=4
+            max_images=4,
         )
 
     def get_models(self) -> List[ModelInfo]:

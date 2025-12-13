@@ -1,11 +1,12 @@
 import base64
 import logging
-from typing import List, Dict, Any
+from typing import Any, Dict, List
+
 from openai import OpenAI
 
 from app.core.config import settings
-from app.services.storage_service import storage_service
 from app.services.model_registry import model_registry
+from app.services.storage_service import storage_service
 
 logger = logging.getLogger(__name__)
 
@@ -30,8 +31,7 @@ class LiteLLMService:
             raise ValueError("LITELLM_BASE_URL not configured")
 
         self.client = OpenAI(
-            base_url=settings.LITELLM_BASE_URL,
-            api_key=settings.LITELLM_API_KEY or "dummy"
+            base_url=settings.LITELLM_BASE_URL, api_key=settings.LITELLM_API_KEY or "dummy"
         )
 
     async def generate_image(
@@ -40,7 +40,7 @@ class LiteLLMService:
         model: str,
         aspect_ratio: str = "1:1",
         quality: str = "standard",
-        n: int = 1
+        n: int = 1,
     ) -> List[str]:
         """
         Generate images using LiteLLM proxy.
@@ -67,7 +67,7 @@ class LiteLLMService:
             "prompt": prompt,
             "n": n,
             "size": size,
-            "response_format": "b64_json"
+            "response_format": "b64_json",
         }
 
         # Add quality parameter only if model supports it

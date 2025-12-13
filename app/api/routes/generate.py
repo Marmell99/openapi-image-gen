@@ -1,5 +1,6 @@
 import logging
 from typing import List
+
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import HTMLResponse, StreamingResponse
 
@@ -7,10 +8,10 @@ from app.core.config import settings
 from app.core.security import verify_token
 from app.schemas.requests import ImageRequest
 from app.schemas.responses import ImageResponse
-from app.services.litellm_service import get_litellm_service
-from app.services.openai_service import get_openai_service
 from app.services.gemini_service import get_gemini_service
+from app.services.litellm_service import get_litellm_service
 from app.services.model_registry import model_registry
+from app.services.openai_service import get_openai_service
 from app.utils.sse import generate_with_progress
 
 logger = logging.getLogger(__name__)
@@ -27,12 +28,9 @@ router = APIRouter(prefix="/generate", tags=["Image Generation"])
         "Generate an image from a text prompt. "
         "Uses LiteLLM proxy by default for cost tracking, with fallback to direct API calls. "
         "Supports OpenAI DALL-E and Google Gemini models."
-    )
+    ),
 )
-async def generate_image(
-    request: ImageRequest,
-    _: None = Depends(verify_token)
-) -> ImageResponse:
+async def generate_image(request: ImageRequest, _: None = Depends(verify_token)) -> ImageResponse:
     """
     Generate image with standard JSON response.
     """
@@ -59,7 +57,7 @@ async def generate_image(
             model=model,
             aspect_ratio=request.aspect_ratio,
             quality=request.quality,
-            n=request.n
+            n=request.n,
         )
     except Exception as e:
         logger.error(f"Generation failed: {e}", exc_info=True)
@@ -78,8 +76,8 @@ async def generate_image(
             "all_urls": urls if len(urls) > 1 else None,
             "aspect_ratio": request.aspect_ratio,
             "quality": request.quality,
-            "n": len(urls)
-        }
+            "n": len(urls),
+        },
     )
 
 
@@ -90,12 +88,9 @@ async def generate_image(
     description=(
         "Generate an image with real-time progress updates via Server-Sent Events. "
         "Returns a stream of status updates followed by the final result."
-    )
+    ),
 )
-async def generate_image_stream(
-    request: ImageRequest,
-    _: None = Depends(verify_token)
-):
+async def generate_image_stream(request: ImageRequest, _: None = Depends(verify_token)):
     """
     Generate image with SSE progress streaming.
     """
@@ -121,14 +116,14 @@ async def generate_image_stream(
             service_func=service.generate_image,
             aspect_ratio=request.aspect_ratio,
             quality=request.quality,
-            n=request.n
+            n=request.n,
         ),
         media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",
             "Connection": "keep-alive",
-            "X-Accel-Buffering": "no"  # Disable nginx buffering
-        }
+            "X-Accel-Buffering": "no",  # Disable nginx buffering
+        },
     )
 
 
@@ -139,12 +134,9 @@ async def generate_image_stream(
     description=(
         "Generate an image and return an HTML page with inline preview. "
         "Useful for displaying images directly in web interfaces."
-    )
+    ),
 )
-async def generate_image_preview(
-    request: ImageRequest,
-    _: None = Depends(verify_token)
-):
+async def generate_image_preview(request: ImageRequest, _: None = Depends(verify_token)):
     """
     Generate image with HTML preview response.
     """
@@ -168,7 +160,7 @@ async def generate_image_preview(
             model=model,
             aspect_ratio=request.aspect_ratio,
             quality=request.quality,
-            n=request.n
+            n=request.n,
         )
     except Exception as e:
         logger.error(f"Generation failed: {e}", exc_info=True)
@@ -178,11 +170,13 @@ async def generate_image_preview(
         raise HTTPException(status_code=500, detail="No images generated")
 
     # Build HTML response
-    images_html = "\n".join([
-        f'<img src="{url}" alt="{request.prompt}" '
-        f'style="max-width: 100%; height: auto; border-radius: 8px; margin: 8px 0;" />'
-        for url in urls
-    ])
+    images_html = "\n".join(
+        [
+            f'<img src="{url}" alt="{request.prompt}" '
+            f'style="max-width: 100%; height: auto; border-radius: 8px; margin: 8px 0;" />'
+            for url in urls
+        ]
+    )
 
     html_content = f"""<!DOCTYPE html>
 <html>
@@ -237,10 +231,7 @@ async def generate_image_preview(
 </body>
 </html>"""
 
-    return HTMLResponse(
-        content=html_content,
-        headers={"Content-Disposition": "inline"}
-    )
+    return HTMLResponse(content=html_content, headers={"Content-Disposition": "inline"})
 
 
 def _get_service(provider: str):

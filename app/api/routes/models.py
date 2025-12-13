@@ -1,4 +1,5 @@
 import logging
+
 from fastapi import APIRouter, Depends
 
 from app.core.security import verify_token
@@ -19,11 +20,9 @@ router = APIRouter(prefix="/models", tags=["Models"])
     description=(
         "Get list of available image generation models. "
         "Results are cached and refreshed periodically or on demand."
-    )
+    ),
 )
-async def list_models(
-    _: None = Depends(verify_token)
-) -> ModelListResponse:
+async def list_models(_: None = Depends(verify_token)) -> ModelListResponse:
     """
     List all available models for image generation.
     """
@@ -32,7 +31,7 @@ async def list_models(
     return ModelListResponse(
         models=models,
         cached=model_registry.cache_valid,
-        cache_expires_in=model_registry.cache_expires_in
+        cache_expires_in=model_registry.cache_expires_in,
     )
 
 
@@ -44,11 +43,10 @@ async def list_models(
     description=(
         "Force refresh of available models from LiteLLM. "
         "Use this to reload models after configuration changes."
-    )
+    ),
 )
 async def refresh_models(
-    request: ModelRefreshRequest = ModelRefreshRequest(),
-    _: None = Depends(verify_token)
+    request: ModelRefreshRequest = ModelRefreshRequest(), _: None = Depends(verify_token)
 ) -> ModelListResponse:
     """
     Refresh model list from LiteLLM.
@@ -60,5 +58,5 @@ async def refresh_models(
     return ModelListResponse(
         models=models,
         cached=False,  # Just refreshed
-        cache_expires_in=model_registry.cache_expires_in
+        cache_expires_in=model_registry.cache_expires_in,
     )

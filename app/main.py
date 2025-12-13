@@ -1,18 +1,18 @@
 import logging
 from contextlib import asynccontextmanager
+from pathlib import Path
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from pathlib import Path
 
+from app.api.routes import generate, health, models
 from app.core.config import settings
-from app.api.routes import generate, models, health
 from app.services.model_registry import model_registry
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 
 logger = logging.getLogger(__name__)
@@ -58,7 +58,7 @@ app = FastAPI(
     lifespan=lifespan,
     docs_url="/docs",
     redoc_url="/redoc",
-    openapi_url="/openapi.json"
+    openapi_url="/openapi.json",
 )
 
 # CORS middleware
@@ -71,11 +71,7 @@ app.add_middleware(
 )
 
 # Mount static files for generated images
-app.mount(
-    "/images",
-    StaticFiles(directory=settings.STORAGE_PATH),
-    name="images"
-)
+app.mount("/images", StaticFiles(directory=settings.STORAGE_PATH), name="images")
 
 # Register routers
 app.include_router(generate.router)
@@ -83,12 +79,7 @@ app.include_router(models.router)
 app.include_router(health.router)
 
 
-@app.get(
-    "/",
-    tags=["Root"],
-    summary="API Info",
-    description="Get basic API information"
-)
+@app.get("/", tags=["Root"], summary="API Info", description="Get basic API information")
 async def root():
     """
     Root endpoint with API information.
@@ -101,6 +92,6 @@ async def root():
         "providers": {
             "litellm": settings.litellm_available,
             "openai": settings.openai_available,
-            "gemini": settings.gemini_available
-        }
+            "gemini": settings.gemini_available,
+        },
     }

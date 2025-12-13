@@ -1,0 +1,118 @@
+[project]
+name = "image-generation-api"
+version = "1.0.0"
+description = "Image Generation OpenAPI Server with LiteLLM integration"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115.5",
+    "uvicorn[standard]>=0.32.1",
+    "python-multipart>=0.0.18",
+    "pydantic>=2.10.3",
+    "pydantic-settings>=2.6.1",
+    "python-dotenv>=1.0.1",
+    "openai>=1.57.2",
+    "google-generativeai>=0.8.3",
+    "sse-starlette>=2.2.1",
+    "aiofiles>=24.1.0",
+    "httpx>=0.28.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3.4",
+    "pytest-asyncio>=0.24.0",
+    "pytest-cov>=6.0.0",
+    "ruff>=0.8.4",
+    "mypy>=1.13.0",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+# Ruff configuration
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+exclude = [
+    ".git",
+    ".venv",
+    "venv",
+    "__pycache__",
+    "build",
+    "dist",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "F",   # pyflakes
+    "I",   # isort
+    "N",   # pep8-naming
+    "W",   # pycodestyle warnings
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "SIM", # flake8-simplify
+]
+ignore = [
+    "E501",  # Line too long (handled by formatter)
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["app"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
+
+# mypy configuration
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false  # Set to true for stricter checking
+check_untyped_defs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+show_error_codes = true
+pretty = true
+
+# Per-module options
+[[tool.mypy.overrides]]
+module = [
+    "google.genai.*",
+    "sse_starlette.*",
+]
+ignore_missing_imports = true
+
+# pytest configuration
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+    "--showlocals",
+]
+markers = [
+    "asyncio: mark test as async",
+]
+
+# Coverage configuration
+[tool.coverage.run]
+source = ["app"]
+omit = ["tests/*", "venv/*", ".venv/*"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]

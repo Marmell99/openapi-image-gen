@@ -1,5 +1,6 @@
 import logging
 from typing import List
+
 from google import genai
 from google.genai import types
 
@@ -34,7 +35,7 @@ class GeminiService:
         model: str,
         aspect_ratio: str = "1:1",
         quality: str = "standard",  # Not used for Gemini
-        n: int = 1
+        n: int = 1,
     ) -> List[str]:
         """
         Generate images using Google Gemini API directly.
@@ -47,16 +48,14 @@ class GeminiService:
 
         # Gemini generates one image per request
         for i in range(n):
-            logger.debug(f"Generating image {i+1}/{n}")
+            logger.debug(f"Generating image {i + 1}/{n}")
 
             response = self.client.models.generate_content(
                 model=model,
                 contents=prompt,
                 config=types.GenerateContentConfig(
                     response_modalities=["IMAGE"],
-                    image_config=types.ImageConfig(
-                        aspect_ratio=gemini_aspect_ratio
-                    ),
+                    image_config=types.ImageConfig(aspect_ratio=gemini_aspect_ratio),
                 ),
             )
 

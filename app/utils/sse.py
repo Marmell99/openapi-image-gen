@@ -1,7 +1,7 @@
 import json
 import logging
-from typing import AsyncGenerator, Callable, Any, Awaitable
 from dataclasses import dataclass
+from typing import Any, AsyncGenerator, Awaitable, Callable
 
 logger = logging.getLogger(__name__)
 
@@ -11,6 +11,7 @@ class SSEEvent:
     """
     Server-Sent Event message.
     """
+
     event: str
     data: dict
 
@@ -20,11 +21,7 @@ class SSEEvent:
 
 
 async def generate_with_progress(
-    prompt: str,
-    model: str,
-    provider: str,
-    service_func: Callable[..., Awaitable[Any]],
-    **kwargs
+    prompt: str, model: str, provider: str, service_func: Callable[..., Awaitable[Any]], **kwargs
 ) -> AsyncGenerator[str, None]:
     """
     Generic SSE generator for image generation with progress updates.
@@ -41,47 +38,43 @@ async def generate_with_progress(
     """
     try:
         # Status: Queued
-        yield SSEEvent("status", {
-            "status": "queued",
-            "progress": 0,
-            "message": f"Request queued for {model}"
-        }).format()
+        yield SSEEvent(
+            "status", {"status": "queued", "progress": 0, "message": f"Request queued for {model}"}
+        ).format()
 
         # Status: Starting generation
-        yield SSEEvent("status", {
-            "status": "generating",
-            "progress": 20,
-            "message": f"Starting generation with {provider}/{model}"
-        }).format()
+        yield SSEEvent(
+            "status",
+            {
+                "status": "generating",
+                "progress": 20,
+                "message": f"Starting generation with {provider}/{model}",
+            },
+        ).format()
 
         # Call actual generation service
         logger.info(f"Calling generation service for {model}")
-        urls = await service_func(
-            prompt=prompt,
-            model=model,
-            **kwargs
-        )
+        urls = await service_func(prompt=prompt, model=model, **kwargs)
 
         # Status: Processing
-        yield SSEEvent("status", {
-            "status": "processing",
-            "progress": 80,
-            "message": "Processing and saving images"
-        }).format()
+        yield SSEEvent(
+            "status",
+            {"status": "processing", "progress": 80, "message": "Processing and saving images"},
+        ).format()
 
         # Status: Complete
-        yield SSEEvent("complete", {
-            "status": "complete",
-            "progress": 100,
-            "message": f"Successfully generated {len(urls)} image(s)",
-            "image_urls": urls,
-            "model": model,
-            "provider": provider
-        }).format()
+        yield SSEEvent(
+            "complete",
+            {
+                "status": "complete",
+                "progress": 100,
+                "message": f"Successfully generated {len(urls)} image(s)",
+                "image_urls": urls,
+                "model": model,
+                "provider": provider,
+            },
+        ).format()
 
     except Exception as e:
         logger.error(f"Generation error: {e}", exc_info=True)
-        yield SSEEvent("error", {
-            "status": "error",
-            "message": str(e)
-        }).format()
+        yield SSEEvent("error", {"status": "error", "message": str(e)}).format()

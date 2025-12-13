@@ -1,6 +1,7 @@
 import logging
-from fastapi import APIRouter
+
 import httpx
+from fastapi import APIRouter
 
 from app.core.config import settings
 from app.schemas.responses import HealthResponse
@@ -15,7 +16,7 @@ router = APIRouter(tags=["Health"])
     response_model=HealthResponse,
     operation_id="health_check",
     summary="Health check",
-    description="Check service health and provider availability"
+    description="Check service health and provider availability",
 )
 async def health_check() -> HealthResponse:
     """
@@ -37,5 +38,5 @@ async def health_check() -> HealthResponse:
         status="healthy",
         litellm=litellm_available,
         openai=settings.openai_available,
-        gemini=settings.gemini_available
+        gemini=settings.gemini_available,
     )

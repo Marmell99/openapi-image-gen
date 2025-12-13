@@ -1,4 +1,5 @@
-from typing import List, Dict, Any, Optional
+from typing import Any, Dict, List, Optional
+
 from pydantic import BaseModel, Field, HttpUrl
 
 
@@ -7,29 +8,16 @@ class ImageResponse(BaseModel):
     Response schema for image generation.
     """
 
-    image_url: str = Field(
-        ...,
-        description="URL to access the generated image"
-    )
+    image_url: str = Field(..., description="URL to access the generated image")
 
-    prompt: str = Field(
-        ...,
-        description="The prompt used for generation"
-    )
+    prompt: str = Field(..., description="The prompt used for generation")
 
-    model: str = Field(
-        ...,
-        description="The model that generated the image"
-    )
+    model: str = Field(..., description="The model that generated the image")
 
-    provider: str = Field(
-        ...,
-        description="The provider used (litellm, openai, gemini)"
-    )
+    provider: str = Field(..., description="The provider used (litellm, openai, gemini)")
 
     metadata: Dict[str, Any] = Field(
-        default_factory=dict,
-        description="Additional metadata about the generation"
+        default_factory=dict, description="Additional metadata about the generation"
     )
 
 
@@ -39,19 +27,14 @@ class ModelCapabilities(BaseModel):
     """
 
     supports_quality: bool = Field(
-        default=False,
-        description="Whether model supports quality parameter"
+        default=False, description="Whether model supports quality parameter"
     )
 
     supports_aspect_ratios: List[str] = Field(
-        default_factory=lambda: ["1:1"],
-        description="Supported aspect ratios"
+        default_factory=lambda: ["1:1"], description="Supported aspect ratios"
     )
 
-    max_images: int = Field(
-        default=1,
-        description="Maximum number of images (n parameter)"
-    )
+    max_images: int = Field(default=1, description="Maximum number of images (n parameter)")
 
 
 class ModelInfo(BaseModel):
@@ -59,19 +42,12 @@ class ModelInfo(BaseModel):
     Information about an available model.
     """
 
-    id: str = Field(
-        ...,
-        description="Model identifier"
-    )
+    id: str = Field(..., description="Model identifier")
 
-    provider: str = Field(
-        ...,
-        description="Provider offering this model"
-    )
+    provider: str = Field(..., description="Provider offering this model")
 
     capabilities: ModelCapabilities = Field(
-        default_factory=ModelCapabilities,
-        description="Model capabilities"
+        default_factory=ModelCapabilities, description="Model capabilities"
     )
 
 
@@ -80,19 +56,12 @@ class ModelListResponse(BaseModel):
     Response schema for listing available models.
     """
 
-    models: List[ModelInfo] = Field(
-        ...,
-        description="List of available models"
-    )
+    models: List[ModelInfo] = Field(..., description="List of available models")
 
-    cached: bool = Field(
-        ...,
-        description="Whether results are from cache"
-    )
+    cached: bool = Field(..., description="Whether results are from cache")
 
     cache_expires_in: Optional[int] = Field(
-        default=None,
-        description="Seconds until cache expiration"
+        default=None, description="Seconds until cache expiration"
     )
 
 
@@ -101,22 +70,10 @@ class HealthResponse(BaseModel):
     Response schema for health check.
     """
 
-    status: str = Field(
-        ...,
-        description="Overall service status"
-    )
+    status: str = Field(..., description="Overall service status")
 
-    litellm: bool = Field(
-        ...,
-        description="LiteLLM availability"
-    )
+    litellm: bool = Field(..., description="LiteLLM availability")
 
-    openai: bool = Field(
-        ...,
-        description="OpenAI direct access availability"
-    )
+    openai: bool = Field(..., description="OpenAI direct access availability")
 
-    gemini: bool = Field(
-        ...,
-        description="Gemini direct access availability"
-    )
+    gemini: bool = Field(..., description="Gemini direct access availability")
