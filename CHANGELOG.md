@@ -2,6 +2,19 @@
 
 <!-- version list -->
 
+## v0.6.0 (2025-12-14)
+
+### Features
+
+- Show DEFAULT_MODEL in OpenAPI schema
+  ([`c16e04c`](https://github.com/danielcopper/openapi-image-gen/commit/c16e04ce4b163a17ee188f43befc7c989d823cc4))
+
+### Refactoring
+
+- Rename OPENWEBUI_API_URL to OPENWEBUI_BASE_URL
+  ([`2620222`](https://github.com/danielcopper/openapi-image-gen/commit/2620222be1a3254cf77d6532bcb111411698e29b))
+
+
 ## v0.5.0 (2025-12-14)
 
 ### Features
