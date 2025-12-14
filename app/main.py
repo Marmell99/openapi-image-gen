@@ -114,26 +114,23 @@ def custom_openapi():
         routes=app.routes,
     )
 
-    # Get available models and add to schema description
-    available_models = model_registry.get_models()
-    if available_models:
-        image_models = [m.id for m in available_models if "image" in m.id.lower() or "dall" in m.id.lower()]
-        if not image_models:
-            image_models = [m.id for m in available_models[:10]]  # First 10 as fallback
-
-        models_list = ", ".join(f"'{m}'" for m in image_models)
-
-        # Update the model field description in ImageRequest schema
-        if (
-            "components" in openapi_schema
-            and "schemas" in openapi_schema["components"]
-            and "ImageRequest" in openapi_schema["components"]["schemas"]
-        ):
-            props = openapi_schema["components"]["schemas"]["ImageRequest"].get("properties", {})
-            if "model" in props:
+    # Update model field description with default model info
+    if (
+        "components" in openapi_schema
+        and "schemas" in openapi_schema["components"]
+        and "ImageRequest" in openapi_schema["components"]["schemas"]
+    ):
+        props = openapi_schema["components"]["schemas"]["ImageRequest"].get("properties", {})
+        if "model" in props:
+            if settings.DEFAULT_MODEL:
                 props["model"]["description"] = (
-                    f"Model ID for image generation. Available models: {models_list}. "
-                    "Use 'openai/dall-e-3' for high quality, 'openai/gpt-image-1' for fast generation."
+                    f"Optional. Server uses '{settings.DEFAULT_MODEL}' if not specified. "
+                    "Do not send this parameter unless you need a different model."
+                )
+            else:
+                props["model"]["description"] = (
+                    "Optional. Server selects the best available model if not specified. "
+                    "Do not send this parameter unless you need a specific model."
                 )
 
     app.openapi_schema = openapi_schema
