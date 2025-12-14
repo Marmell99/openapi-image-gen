@@ -2,6 +2,25 @@
 
 <!-- version list -->
 
+## v0.2.0 (2025-12-14)
+
+### Bug Fixes
+
+- Add auth header to LiteLLM health check
+  ([`0c6edf7`](https://github.com/danielcopper/openapi-image-gen/commit/0c6edf7970933350ae10739c8ce8f690c628a302))
+
+### Features
+
+- Add DEFAULT_MODEL environment variable
+  ([`bcd6f17`](https://github.com/danielcopper/openapi-image-gen/commit/bcd6f1799e1fa298f082808ee47ee4a22630fd92))
+
+- Filter models to only image generation models
+  ([`30f80ee`](https://github.com/danielcopper/openapi-image-gen/commit/30f80ee969d83d5c5f674f4d4ca8ff7221ad6a51))
+
+- Rename BASE_URL to IMAGE_BASE_URL
+  ([`f433e17`](https://github.com/danielcopper/openapi-image-gen/commit/f433e1748bd0f6731a944e38998cfcf77fccf4d5))
+
+
 ## v0.1.3 (2025-12-14)
 
 ### Bug Fixes
