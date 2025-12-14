@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v0.5.0 (2025-12-14)
+
+### Features
+
+- **config**: Add SAVE_IMAGES_LOCALLY option
+  ([`3d48993`](https://github.com/danielcopper/openapi-image-gen/commit/3d489932f260866da3a3acd4b8043ba2edbf9a73))
+
+
 ## v0.4.0 (2025-12-14)
 
 ### Bug Fixes
