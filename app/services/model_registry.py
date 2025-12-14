@@ -1,4 +1,5 @@
 import logging
+import re
 import time
 
 import httpx
@@ -14,6 +15,14 @@ class ModelRegistry:
     Manages available models with dynamic discovery from LiteLLM.
     Caches results to avoid frequent API calls.
     """
+
+    # Patterns to identify image generation models
+    IMAGE_MODEL_PATTERNS = [
+        r"dall-e",
+        r"gpt-image",
+        r"gemini.*image",
+        r"imagen",
+    ]
 
     # Model capabilities database (fallback for known models)
     KNOWN_CAPABILITIES: dict[str, ModelCapabilities] = {
@@ -124,6 +133,11 @@ class ModelRegistry:
             if not model_id:
                 continue
 
+            # Filter to only image generation models if enabled
+            if settings.FILTER_IMAGE_MODELS and not self._is_image_model(model_id):
+                logger.debug(f"Skipping non-image model: {model_id}")
+                continue
+
             # Determine provider from model ID
             provider = self._infer_provider(model_id)
 
@@ -166,6 +180,13 @@ class ModelRegistry:
                 )
 
         return models
+
+    def _is_image_model(self, model_id: str) -> bool:
+        """
+        Check if a model is an image generation model.
+        """
+        model_lower = model_id.lower()
+        return any(re.search(pattern, model_lower) for pattern in self.IMAGE_MODEL_PATTERNS)
 
     def _infer_provider(self, model_id: str) -> str:
         """

@@ -42,13 +42,15 @@ class Settings(BaseSettings):
 
     # Storage Configuration
     STORAGE_PATH: str = "./generated_images"
-    BASE_URL: str = "http://localhost:8000"
+    IMAGE_BASE_URL: str = "http://localhost:8000"  # URL where this API serves images
 
     # Security (Optional)
     API_BEARER_TOKEN: str | None = None
 
     # Model Registry
     MODEL_CACHE_TTL: int = 3600  # Cache models for 1 hour
+    FILTER_IMAGE_MODELS: bool = True  # Only return image generation models from LiteLLM
+    DEFAULT_MODEL: str | None = None  # Default model for image generation
 
     # Server Configuration
     HOST: str = "0.0.0.0"

@@ -119,3 +119,68 @@ def test_infer_provider():
     assert registry._infer_provider("gemini-2.0-flash") == "gemini"
     assert registry._infer_provider("imagen-3.0") == "gemini"
     assert registry._infer_provider("unknown") == "unknown"
+
+
+def test_is_image_model():
+    """
+    Test image model detection.
+    """
+    registry = ModelRegistry()
+
+    # Should match image models
+    assert registry._is_image_model("dall-e-3") is True
+    assert registry._is_image_model("gpt-image-1") is True
+    assert registry._is_image_model("gemini-2.0-flash-preview-image-generation") is True
+    assert registry._is_image_model("imagen-3.0") is True
+
+    # Should NOT match non-image models
+    assert registry._is_image_model("gpt-4o") is False
+    assert registry._is_image_model("claude-3-opus") is False
+    assert registry._is_image_model("gemini-pro") is False
+
+
+@pytest.mark.asyncio
+async def test_filter_image_models():
+    """
+    Test that only image models are returned when filter is enabled.
+    """
+    registry = ModelRegistry()
+
+    mock_response = {
+        "data": [
+            {"id": "dall-e-3"},
+            {"id": "gpt-4o"},
+            {"id": "claude-3-opus"},
+            {"id": "gemini-2.0-flash-preview-image-generation"},
+        ]
+    }
+
+    with patch("app.services.model_registry.settings") as mock_settings:
+        mock_settings.LITELLM_BASE_URL = "http://litellm:4000"
+        mock_settings.LITELLM_API_KEY = None
+        mock_settings.litellm_available = True
+        mock_settings.FILTER_IMAGE_MODELS = True
+        mock_settings.MODEL_CACHE_TTL = 3600
+
+        # Mock HTTP response
+        mock_resp = MagicMock()
+        mock_resp.status_code = 200
+        mock_resp.json.return_value = mock_response
+        mock_resp.raise_for_status.return_value = None
+
+        mock_client_instance = MagicMock()
+        mock_client_instance.get = AsyncMock(return_value=mock_resp)
+        mock_client = MagicMock()
+        mock_client.__aenter__ = AsyncMock(return_value=mock_client_instance)
+        mock_client.__aexit__ = AsyncMock(return_value=None)
+
+        with patch("app.services.model_registry.httpx.AsyncClient", return_value=mock_client):
+            models = await registry.load_models()
+
+            # Should only have image models
+            assert len(models) == 2
+            model_ids = [m.id for m in models]
+            assert "dall-e-3" in model_ids
+            assert "gemini-2.0-flash-preview-image-generation" in model_ids
+            assert "gpt-4o" not in model_ids
+            assert "claude-3-opus" not in model_ids
