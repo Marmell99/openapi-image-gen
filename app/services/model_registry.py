@@ -27,23 +27,37 @@ class ModelRegistry:
     # Model capabilities database (fallback for known models)
     KNOWN_CAPABILITIES: dict[str, ModelCapabilities] = {
         "dall-e-2": ModelCapabilities(
-            supports_quality=False, supports_aspect_ratios=["1:1"], max_images=4
+            supports_quality=False,
+            supports_aspect_ratios=["1:1"],
+            max_images=4,
+            supports_editing=True,
+            editing_type="mask",
         ),
         "dall-e-3": ModelCapabilities(
-            supports_quality=True, supports_aspect_ratios=["1:1", "16:9", "9:16"], max_images=1
+            supports_quality=True,
+            supports_aspect_ratios=["1:1", "16:9", "9:16"],
+            max_images=1,
+            supports_editing=False,
         ),
         "gpt-image-1": ModelCapabilities(
-            supports_quality=False, supports_aspect_ratios=["1:1", "16:9", "9:16"], max_images=4
+            supports_quality=False,
+            supports_aspect_ratios=["1:1", "16:9", "9:16"],
+            max_images=4,
+            supports_editing=True,
+            editing_type="mask",
         ),
         "gemini-2.0-flash-preview-image-generation": ModelCapabilities(
             supports_quality=False,
             supports_aspect_ratios=["1:1", "16:9", "9:16", "4:3", "3:4"],
             max_images=4,
+            supports_editing=True,
+            editing_type="prompt",
         ),
         "imagen-3.0-generate-002": ModelCapabilities(
             supports_quality=False,
             supports_aspect_ratios=["1:1", "16:9", "9:16", "4:3", "3:4"],
             max_images=4,
+            supports_editing=False,
         ),
     }
 

@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
@@ -50,6 +50,15 @@ class ModelCapabilities(BaseModel):
     )
 
     max_images: int = Field(default=1, description="Maximum number of images (n parameter)")
+
+    supports_editing: bool = Field(
+        default=False, description="Whether model supports image editing"
+    )
+
+    editing_type: Literal["mask", "prompt"] | None = Field(
+        default=None,
+        description="Type of editing: 'mask' (OpenAI inpainting) or 'prompt' (Gemini natural language)",
+    )
 
 
 class ModelInfo(BaseModel):
