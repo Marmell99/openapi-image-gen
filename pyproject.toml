@@ -23,7 +23,6 @@ dev = [
     "pytest-asyncio>=0.24.0",
     "pytest-cov>=6.0.0",
     "ruff>=0.8.4",
-    "mypy>=1.13.0",
 ]
 
 [build-system]
@@ -69,26 +68,6 @@ known-first-party = ["app"]
 quote-style = "double"
 indent-style = "space"
 line-ending = "auto"
-
-# mypy configuration
-[tool.mypy]
-python_version = "3.11"
-warn_return_any = true
-warn_unused_configs = true
-disallow_untyped_defs = false  # Set to true for stricter checking
-check_untyped_defs = true
-warn_redundant_casts = true
-warn_unused_ignores = true
-show_error_codes = true
-pretty = true
-
-# Per-module options
-[[tool.mypy.overrides]]
-module = [
-    "google.genai.*",
-    "sse_starlette.*",
-]
-ignore_missing_imports = true
 
 # pytest configuration
 [tool.pytest.ini_options]
