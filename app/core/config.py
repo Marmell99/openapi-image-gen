@@ -52,6 +52,10 @@ class Settings(BaseSettings):
     FILTER_IMAGE_MODELS: bool = True  # Only return image generation models from LiteLLM
     DEFAULT_MODEL: str | None = None  # Default model for image generation
 
+    # Open WebUI Integration (optional)
+    OPENWEBUI_API_URL: str | None = None  # e.g. https://chat.mydomain.com
+    OPENWEBUI_API_KEY: str | None = None  # API key from Open WebUI settings
+
     # Server Configuration
     HOST: str = "0.0.0.0"
     PORT: int = 8000
@@ -70,6 +74,11 @@ class Settings(BaseSettings):
     def gemini_available(self) -> bool:
         """Check if Gemini direct access is available."""
         return bool(self.GEMINI_API_KEY)
+
+    @property
+    def openwebui_available(self) -> bool:
+        """Check if Open WebUI integration is configured."""
+        return bool(self.OPENWEBUI_API_URL and self.OPENWEBUI_API_KEY)
 
 
 settings = Settings()

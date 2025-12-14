@@ -1,3 +1,4 @@
+import logging
 import uuid
 from pathlib import Path
 
@@ -6,10 +7,13 @@ import httpx
 
 from app.core.config import settings
 
+logger = logging.getLogger(__name__)
+
 
 class StorageService:
     """
     Handles local file storage for generated images.
+    Optionally uploads to Open WebUI for better accessibility.
     """
 
     def __init__(self):
@@ -18,24 +22,36 @@ class StorageService:
 
     async def save_image(self, image_data: bytes, extension: str = "png") -> str:
         """
-        Save image bytes to local storage and return public URL.
+        Save image bytes to local storage and optionally upload to Open WebUI.
 
         Args:
             image_data: Raw image bytes
             extension: File extension (png, jpg, webp)
 
         Returns:
-            Public URL to access the image
+            Public URL to access the image (Open WebUI URL if configured, else local)
         """
         filename = f"{uuid.uuid4()}.{extension}"
         filepath = self.storage_path / filename
 
+        # Always save locally first
         async with aiofiles.open(filepath, "wb") as f:
             await f.write(image_data)
 
-        relative_url = f"/images/{filename}"
+        local_url = f"{settings.IMAGE_BASE_URL.rstrip('/')}/images/{filename}"
 
-        return f"{settings.IMAGE_BASE_URL.rstrip('/')}{relative_url}"
+        # Upload to Open WebUI if configured
+        if settings.openwebui_available:
+            try:
+                from app.services.openwebui_service import get_openwebui_service
+
+                webui_service = get_openwebui_service()
+                webui_url = await webui_service.upload_image(image_data, filename)
+                return webui_url
+            except Exception as e:
+                logger.warning(f"Open WebUI upload failed, using local URL: {e}")
+
+        return local_url
 
     async def get_image(self, url: str) -> bytes:
         """
