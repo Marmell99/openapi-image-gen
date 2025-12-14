@@ -2,6 +2,32 @@
 
 <!-- version list -->
 
+## v0.4.0 (2025-12-14)
+
+### Bug Fixes
+
+- Resolve all ruff lint errors
+  ([`606384d`](https://github.com/danielcopper/openapi-image-gen/commit/606384d9f4476e3d6f77bfac93912a15e1592df3))
+
+### Documentation
+
+- Add Open WebUI integration documentation
+  ([`d99a5d4`](https://github.com/danielcopper/openapi-image-gen/commit/d99a5d40cd5c96177a2cef987a3ded9faf5c5bb3))
+
+- Update documentation for image editing feature
+  ([`8dde037`](https://github.com/danielcopper/openapi-image-gen/commit/8dde037e77c5d7b2c56dba18236ed7a059021c3a))
+
+### Features
+
+- Add Open WebUI Files API integration
+  ([`d72a2ad`](https://github.com/danielcopper/openapi-image-gen/commit/d72a2ade8b36f61f37f41cfd1e066e85695e22ee))
+
+### Testing
+
+- Add Open WebUI service tests
+  ([`61a328c`](https://github.com/danielcopper/openapi-image-gen/commit/61a328ca5ccc003dd1dddef47987a6dce46f0d4b))
+
+
 ## v0.3.0 (2025-12-14)
 
 ### Chores
