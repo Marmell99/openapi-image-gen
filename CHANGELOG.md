@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v0.7.0 (2025-12-14)
+
+### Features
+
+- Add JSON-based edit endpoint for LLM tool use
+  ([`02781c0`](https://github.com/danielcopper/openapi-image-gen/commit/02781c0cda12846e9c231e72425a2bf0951b13cd))
+
+
 ## v0.6.0 (2025-12-14)
 
 ### Features
