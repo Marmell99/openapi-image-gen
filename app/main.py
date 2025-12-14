@@ -123,14 +123,17 @@ def custom_openapi():
         models_list = ", ".join(f"'{m}'" for m in image_models)
 
         # Update the model field description in ImageRequest schema
-        if "components" in openapi_schema and "schemas" in openapi_schema["components"]:
-            if "ImageRequest" in openapi_schema["components"]["schemas"]:
-                props = openapi_schema["components"]["schemas"]["ImageRequest"].get("properties", {})
-                if "model" in props:
-                    props["model"]["description"] = (
-                        f"Model ID for image generation. Available models: {models_list}. "
-                        "Use 'openai/dall-e-3' for high quality, 'openai/gpt-image-1' for fast generation."
-                    )
+        if (
+            "components" in openapi_schema
+            and "schemas" in openapi_schema["components"]
+            and "ImageRequest" in openapi_schema["components"]["schemas"]
+        ):
+            props = openapi_schema["components"]["schemas"]["ImageRequest"].get("properties", {})
+            if "model" in props:
+                props["model"]["description"] = (
+                    f"Model ID for image generation. Available models: {models_list}. "
+                    "Use 'openai/dall-e-3' for high quality, 'openai/gpt-image-1' for fast generation."
+                )
 
     app.openapi_schema = openapi_schema
     return app.openapi_schema
