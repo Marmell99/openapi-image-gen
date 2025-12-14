@@ -16,12 +16,12 @@ class OpenWebUIService:
     """
 
     def __init__(self):
-        if not settings.OPENWEBUI_API_URL:
-            raise ValueError("OPENWEBUI_API_URL not configured")
+        if not settings.OPENWEBUI_BASE_URL:
+            raise ValueError("OPENWEBUI_BASE_URL not configured")
         if not settings.OPENWEBUI_API_KEY:
             raise ValueError("OPENWEBUI_API_KEY not configured")
 
-        self.base_url = settings.OPENWEBUI_API_URL.rstrip("/")
+        self.base_url = settings.OPENWEBUI_BASE_URL.rstrip("/")
         self.api_key = settings.OPENWEBUI_API_KEY
 
     async def upload_image(self, image_data: bytes, filename: str) -> str:

@@ -8,16 +8,16 @@ def test_openwebui_available_property():
     from app.core.config import Settings
 
     # Not available when URL missing
-    settings = Settings(OPENWEBUI_API_URL=None, OPENWEBUI_API_KEY="key")
+    settings = Settings(OPENWEBUI_BASE_URL=None, OPENWEBUI_API_KEY="key")
     assert settings.openwebui_available is False
 
     # Not available when key missing
-    settings = Settings(OPENWEBUI_API_URL="http://localhost", OPENWEBUI_API_KEY=None)
+    settings = Settings(OPENWEBUI_BASE_URL="http://localhost", OPENWEBUI_API_KEY=None)
     assert settings.openwebui_available is False
 
     # Available when both set
     settings = Settings(
-        OPENWEBUI_API_URL="http://localhost", OPENWEBUI_API_KEY="key"
+        OPENWEBUI_BASE_URL="http://localhost", OPENWEBUI_API_KEY="key"
     )
     assert settings.openwebui_available is True
 
@@ -28,7 +28,7 @@ async def test_openwebui_service_upload():
     from app.services.openwebui_service import OpenWebUIService
 
     with patch("app.services.openwebui_service.settings") as mock_settings:
-        mock_settings.OPENWEBUI_API_URL = "https://chat.example.com"
+        mock_settings.OPENWEBUI_BASE_URL = "https://chat.example.com"
         mock_settings.OPENWEBUI_API_KEY = "test-key"
 
         service = OpenWebUIService()
@@ -65,7 +65,7 @@ async def test_openwebui_service_upload_no_file_id():
     from app.services.openwebui_service import OpenWebUIService
 
     with patch("app.services.openwebui_service.settings") as mock_settings:
-        mock_settings.OPENWEBUI_API_URL = "https://chat.example.com"
+        mock_settings.OPENWEBUI_BASE_URL = "https://chat.example.com"
         mock_settings.OPENWEBUI_API_KEY = "test-key"
 
         service = OpenWebUIService()

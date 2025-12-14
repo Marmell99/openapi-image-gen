@@ -54,7 +54,7 @@ class Settings(BaseSettings):
     DEFAULT_MODEL: str | None = None  # Default model for image generation
 
     # Open WebUI Integration (optional)
-    OPENWEBUI_API_URL: str | None = None  # e.g. https://chat.mydomain.com
+    OPENWEBUI_BASE_URL: str | None = None  # e.g. https://chat.mydomain.com
     OPENWEBUI_API_KEY: str | None = None  # API key from Open WebUI settings
 
     # Server Configuration
@@ -79,7 +79,7 @@ class Settings(BaseSettings):
     @property
     def openwebui_available(self) -> bool:
         """Check if Open WebUI integration is configured."""
-        return bool(self.OPENWEBUI_API_URL and self.OPENWEBUI_API_KEY)
+        return bool(self.OPENWEBUI_BASE_URL and self.OPENWEBUI_API_KEY)
 
 
 settings = Settings()
