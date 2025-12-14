@@ -33,6 +33,8 @@ jobs:
         uses: python-semantic-release/python-semantic-release@v9.15.2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   docker:
     needs: release
