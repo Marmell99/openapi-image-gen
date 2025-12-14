@@ -1,4 +1,5 @@
 import base64
+import io
 import logging
 from typing import Any
 
@@ -96,6 +97,72 @@ class OpenAIService:
             urls.append(url)
 
         logger.info(f"Generated {len(urls)} image(s) successfully")
+        return urls
+
+    async def edit_image(
+        self,
+        image: bytes,
+        prompt: str,
+        model: str,
+        mask: bytes | None = None,
+        n: int = 1,
+    ) -> list[str]:
+        """
+        Edit an image using OpenAI inpainting API.
+
+        Args:
+            image: Source image bytes (PNG format recommended)
+            prompt: Description of the edit to make
+            model: Model to use (dall-e-2 or gpt-image-1)
+            mask: Optional mask image bytes (transparent areas will be edited)
+            n: Number of variations to generate
+
+        Returns:
+            List of URLs to edited images
+        """
+        logger.info(f"Editing image with {model} via OpenAI direct")
+
+        # Get model capabilities
+        model_info = model_registry.get_model(model)
+
+        # Adjust n if model doesn't support multiple images
+        actual_n = n
+        if model_info and n > model_info.capabilities.max_images:
+            logger.warning(
+                f"Model {model} supports max {model_info.capabilities.max_images} images"
+            )
+            actual_n = model_info.capabilities.max_images
+
+        # Prepare image as file-like object
+        image_file = io.BytesIO(image)
+        image_file.name = "image.png"
+
+        # Build request parameters
+        params: dict[str, Any] = {
+            "model": model,
+            "image": image_file,
+            "prompt": prompt,
+            "n": actual_n,
+            "response_format": "b64_json",
+        }
+
+        # Add mask if provided
+        if mask:
+            mask_file = io.BytesIO(mask)
+            mask_file.name = "mask.png"
+            params["mask"] = mask_file
+
+        # Call OpenAI edit API
+        response = self.client.images.edit(**params)
+
+        # Save images and return URLs
+        urls = []
+        for image_data in response.data:
+            image_bytes = base64.b64decode(image_data.b64_json)
+            url = await storage_service.save_image(image_bytes, "png")
+            urls.append(url)
+
+        logger.info(f"Edited image, generated {len(urls)} result(s)")
         return urls
 
     def _get_size(self, model: str, aspect_ratio: str) -> str:
