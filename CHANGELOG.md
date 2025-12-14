@@ -2,6 +2,44 @@
 
 <!-- version list -->
 
+## v0.3.0 (2025-12-14)
+
+### Chores
+
+- Remove mypy
+  ([`b0961d6`](https://github.com/danielcopper/openapi-image-gen/commit/b0961d6fd67147e8e1c631355331a024039d5466))
+
+### Code Style
+
+- Combine nested if statements in openapi schema
+  ([`145097c`](https://github.com/danielcopper/openapi-image-gen/commit/145097ced083f1d32c81e201e6f37f4fa635c8ac))
+
+### Features
+
+- **api**: Add /edit endpoint for image editing
+  ([`7a7b096`](https://github.com/danielcopper/openapi-image-gen/commit/7a7b09676d87c0c8af9e1d113a3166183f1cba75))
+
+- **schemas**: Add editing capabilities to ModelCapabilities
+  ([`a1f8c23`](https://github.com/danielcopper/openapi-image-gen/commit/a1f8c231d5d92feffcb5336dc30205bd7f415118))
+
+- **services**: Add edit_image to Gemini service
+  ([`e44a249`](https://github.com/danielcopper/openapi-image-gen/commit/e44a249155ebfd3d86b96f2c345e247dcf41b5ca))
+
+- **services**: Add edit_image to LiteLLM service
+  ([`01d95ba`](https://github.com/danielcopper/openapi-image-gen/commit/01d95ba8e3a8de259eb6c713fcc23927d8054be6))
+
+- **services**: Add edit_image to OpenAI service
+  ([`2b34ce1`](https://github.com/danielcopper/openapi-image-gen/commit/2b34ce144f7ebb6ab8b629f0f6ea235d6192424e))
+
+- **storage**: Add get_image method for retrieving images
+  ([`a520e75`](https://github.com/danielcopper/openapi-image-gen/commit/a520e75a7ebc23ada8d42673963baa2911239d8e))
+
+### Testing
+
+- Add unit tests for image editing
+  ([`976fb66`](https://github.com/danielcopper/openapi-image-gen/commit/976fb66f9f301b8f41f3a766fdd4ed41ca0b1170))
+
+
 ## v0.2.0 (2025-12-14)
 
 ### Bug Fixes
