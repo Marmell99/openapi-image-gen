@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v0.8.1 (2025-12-15)
+
+### Bug Fixes
+
+- Restore SAVE_IMAGES_LOCALLY config
+  ([`3035f29`](https://github.com/danielcopper/openapi-image-gen/commit/3035f2956a85bb8177042fcd31c503982168589a))
+
+
 ## v0.8.0 (2025-12-15)
 
 ### Features
