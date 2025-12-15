@@ -217,18 +217,50 @@ async def edit_image_json(
     if not urls:
         raise HTTPException(status_code=500, detail="No images generated")
 
-    return ImageResponse(
-        image_url=urls[0],
-        prompt=request.prompt,
-        model=model,
-        provider=request.provider,
-        metadata={
-            "all_urls": urls if len(urls) > 1 else None,
-            "n": len(urls),
-            "edit": True,
-            "source_image": request.image_url,
-        },
-    )
+    # Return markdown format (same as generate endpoint)
+    if settings.MARKDOWN_EMBED_IMAGES:
+        # Return markdown with embedded base64 data URI
+        image_filename = urls[0].split("/")[-1]
+        image_path = Path(settings.STORAGE_PATH) / image_filename
+
+        if not image_path.exists():
+            raise HTTPException(status_code=500, detail="Edited image file not found")
+
+        with open(image_path, "rb") as f:
+            image_data = base64.b64encode(f.read()).decode("utf-8")
+
+        ext = image_path.suffix.lower()
+        mime_types = {".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp"}
+        mime_type = mime_types.get(ext, "image/png")
+
+        markdown = f"![Edited image](data:{mime_type};base64,{image_data})"
+        return ImageResponse(
+            markdown=markdown,
+            prompt=request.prompt,
+            model=model,
+            provider=request.provider,
+            metadata={
+                "n": len(urls),
+                "edit": True,
+                "source_image": request.image_url,
+            },
+        )
+    else:
+        # Return markdown with image URL
+        markdown = f"![Edited image]({urls[0]})"
+        return ImageResponse(
+            markdown=markdown,
+            image_url=urls[0],
+            prompt=request.prompt,
+            model=model,
+            provider=request.provider,
+            metadata={
+                "all_urls": urls if len(urls) > 1 else None,
+                "n": len(urls),
+                "edit": True,
+                "source_image": request.image_url,
+            },
+        )
 
 
 def _get_service(provider: str):

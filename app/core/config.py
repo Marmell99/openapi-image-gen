@@ -43,7 +43,9 @@ class Settings(BaseSettings):
     # Storage Configuration
     STORAGE_PATH: str = "./generated_images"
     IMAGE_BASE_URL: str = "http://localhost:8000"  # URL where this API serves images
-    SAVE_IMAGES_LOCALLY: bool = True  # Set to false if using Open WebUI exclusively
+
+    # Response Configuration
+    MARKDOWN_EMBED_IMAGES: bool = False  # Embed images as base64 data URI in markdown responses
 
     # Security (Optional)
     API_BEARER_TOKEN: str | None = None
@@ -52,10 +54,6 @@ class Settings(BaseSettings):
     MODEL_CACHE_TTL: int = 3600  # Cache models for 1 hour
     FILTER_IMAGE_MODELS: bool = True  # Only return image generation models from LiteLLM
     DEFAULT_MODEL: str | None = None  # Default model for image generation
-
-    # Open WebUI Integration (optional)
-    OPENWEBUI_BASE_URL: str | None = None  # e.g. https://chat.mydomain.com
-    OPENWEBUI_API_KEY: str | None = None  # API key from Open WebUI settings
 
     # Server Configuration
     HOST: str = "0.0.0.0"
@@ -75,11 +73,6 @@ class Settings(BaseSettings):
     def gemini_available(self) -> bool:
         """Check if Gemini direct access is available."""
         return bool(self.GEMINI_API_KEY)
-
-    @property
-    def openwebui_available(self) -> bool:
-        """Check if Open WebUI integration is configured."""
-        return bool(self.OPENWEBUI_BASE_URL and self.OPENWEBUI_API_KEY)
 
 
 settings = Settings()

@@ -37,12 +37,6 @@ Complete configuration reference for the Image Generation API.
 - Default: `./generated_images`
 - Docker: Use volume mount (e.g., `/app/generated_images`)
 
-**`SAVE_IMAGES_LOCALLY`**
-- Whether to save images to local storage
-- Default: `true`
-- Set to `false` if using Open WebUI integration exclusively
-- When `false`, images are only uploaded to Open WebUI (no local backup)
-
 **`IMAGE_BASE_URL`**
 - Public base URL for serving images
 - Default: `http://localhost:8000`
@@ -56,19 +50,14 @@ Complete configuration reference for the Image Generation API.
 - Example: `gpt-image-1`, `dall-e-3`
 - Optional - if not set, first available model is used
 
-### Open WebUI Integration
+### Response Configuration
 
-**`OPENWEBUI_BASE_URL`**
-- Open WebUI instance URL
-- Example: `https://chat.mydomain.com`
-- When set (with API key), images are uploaded to Open WebUI's file storage
-
-**`OPENWEBUI_API_KEY`**
-- API key from Open WebUI
-- Get from: Open WebUI Settings > Account > API Keys
-- Required together with `OPENWEBUI_BASE_URL`
-
-When both are configured, images are automatically uploaded to Open WebUI. This ensures images work from anywhere - no more URL accessibility issues with Docker or external access.
+**`MARKDOWN_EMBED_IMAGES`**
+- Embed images as base64 data URI in markdown responses
+- Default: `false`
+- When `true`: Returns `![image](data:image/png;base64,...)`
+- When `false`: Returns `![image](http://...)`
+- Set to `true` for Open WebUI integration with `ENABLE_CHAT_RESPONSE_BASE64_IMAGE_URL_CONVERSION`
 
 ### Security
 

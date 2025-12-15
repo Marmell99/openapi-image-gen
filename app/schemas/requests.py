@@ -55,12 +55,12 @@ class ImageRequest(BaseModel):
     )
 
     response_format: Literal["url", "base64", "markdown"] = Field(
-        default="url",
+        default="markdown",
         description=(
             "Response format for generated images. "
-            "'url': Returns image URL (for web apps). "
-            "'base64': Returns base64 encoded data (for offline/serverless). "
-            "'markdown': Returns ready-to-use markdown with image URL (for chat/LLM integrations)."
+            "'markdown': Returns markdown with image (default, best for LLM/chat integrations). "
+            "'url': Returns image URL only. "
+            "'base64': Returns base64 encoded data in JSON."
         ),
     )
 

@@ -1,7 +1,6 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from fastapi.testclient import TestClient
 
 
 def test_model_capabilities_editing_fields():
@@ -110,8 +109,6 @@ async def test_storage_get_image_external():
     with patch("app.services.storage_service.settings") as mock_settings:
         mock_settings.STORAGE_PATH = "/tmp/test"
         mock_settings.IMAGE_BASE_URL = "http://localhost:8000"
-        mock_settings.openwebui_available = False
-        mock_settings.OPENWEBUI_BASE_URL = None
 
         service = StorageService()
 
@@ -129,7 +126,7 @@ async def test_storage_get_image_external():
             result = await service.get_image("https://example.com/image.png")
 
             assert result == b"external image data"
-            mock_client.get.assert_called_once_with("https://example.com/image.png", headers={})
+            mock_client.get.assert_called_once_with("https://example.com/image.png")
 
 
 def test_get_default_edit_model():

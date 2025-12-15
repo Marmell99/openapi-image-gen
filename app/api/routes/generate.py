@@ -99,20 +99,49 @@ async def generate_image(request: ImageRequest, _: None = Depends(verify_token))
         )
 
     if request.response_format == "markdown":
-        # Return ready-to-use markdown with image URL
-        markdown = f"![Generated image]({urls[0]})"
-        return ImageResponse(
-            markdown=markdown,
-            image_url=urls[0],
-            prompt=request.prompt,
-            model=model,
-            provider=request.provider,
-            metadata={
-                "aspect_ratio": request.aspect_ratio,
-                "quality": request.quality,
-                "n": len(urls),
-            },
-        )
+        if settings.MARKDOWN_EMBED_IMAGES:
+            # Return markdown with embedded base64 data URI
+            # Open WebUI's ENABLE_CHAT_RESPONSE_BASE64_IMAGE_URL_CONVERSION will convert this
+            image_filename = urls[0].split("/")[-1]
+            image_path = Path(settings.STORAGE_PATH) / image_filename
+
+            if not image_path.exists():
+                raise HTTPException(status_code=500, detail="Generated image file not found")
+
+            with open(image_path, "rb") as f:
+                image_data = base64.b64encode(f.read()).decode("utf-8")
+
+            ext = image_path.suffix.lower()
+            mime_types = {".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp"}
+            mime_type = mime_types.get(ext, "image/png")
+
+            markdown = f"![Generated image](data:{mime_type};base64,{image_data})"
+            return ImageResponse(
+                markdown=markdown,
+                prompt=request.prompt,
+                model=model,
+                provider=request.provider,
+                metadata={
+                    "aspect_ratio": request.aspect_ratio,
+                    "quality": request.quality,
+                    "n": len(urls),
+                },
+            )
+        else:
+            # Return markdown with image URL
+            markdown = f"![Generated image]({urls[0]})"
+            return ImageResponse(
+                markdown=markdown,
+                image_url=urls[0],
+                prompt=request.prompt,
+                model=model,
+                provider=request.provider,
+                metadata={
+                    "aspect_ratio": request.aspect_ratio,
+                    "quality": request.quality,
+                    "n": len(urls),
+                },
+            )
 
     return ImageResponse(
         image_url=urls[0],
