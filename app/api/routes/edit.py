@@ -1,4 +1,5 @@
 import base64
+import contextlib
 import logging
 from pathlib import Path
 from typing import Annotated, Literal
@@ -228,6 +229,11 @@ async def edit_image_json(
 
         with open(image_path, "rb") as f:
             image_data = base64.b64encode(f.read()).decode("utf-8")
+
+        # Clean up local file if not saving locally
+        if not settings.SAVE_IMAGES_LOCALLY:
+            with contextlib.suppress(Exception):
+                image_path.unlink()
 
         ext = image_path.suffix.lower()
         mime_types = {".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp"}

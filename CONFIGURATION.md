@@ -43,6 +43,12 @@ Complete configuration reference for the Image Generation API.
 - Example: `https://api.example.com`
 - Used to construct full image URLs
 
+**`SAVE_IMAGES_LOCALLY`**
+- Save images to local disk
+- Default: `true`
+- Set to `false` when using `MARKDOWN_EMBED_IMAGES=true` with Open WebUI
+- When `false`, images are temporarily written for base64 conversion then deleted
+
 ### Model Defaults
 
 **`DEFAULT_MODEL`**
