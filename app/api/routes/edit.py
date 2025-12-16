@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Annotated, Literal
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
+from fastapi.responses import HTMLResponse
 
 from app.core.config import settings
 from app.core.security import verify_token
@@ -219,7 +220,7 @@ async def edit_image_json(
     if not urls:
         raise HTTPException(status_code=500, detail="No images generated")
 
-    # OpenWebUI mode: return markdown with embedded base64 image
+    # OpenWebUI mode: return HTML with embedded image for iframe display
     if settings.OPENWEBUI_MODE:
         image_filename = urls[0].split("/")[-1]
         image_path = Path(settings.STORAGE_PATH) / image_filename
@@ -239,7 +240,8 @@ async def edit_image_json(
         mime_types = {".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp"}
         mime_type = mime_types.get(ext, "image/png")
 
-        return f"![Edited Image](data:{mime_type};base64,{image_data})"
+        html = f'<img src="data:{mime_type};base64,{image_data}" style="max-width:100%; height:auto;">'
+        return HTMLResponse(content=html, headers={"Content-Disposition": "inline"})
 
     # Return based on MARKDOWN_EMBED_IMAGES setting
     if settings.MARKDOWN_EMBED_IMAGES:
