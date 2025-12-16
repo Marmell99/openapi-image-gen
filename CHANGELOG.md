@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v0.9.1 (2025-12-16)
+
+### Bug Fixes
+
+- **openwebui**: Return markdown string instead of data URI list
+  ([`dca34ae`](https://github.com/danielcopper/openapi-image-gen/commit/dca34ae863301d0efa819d60921d05b0576d9d2c))
+
+
 ## v0.9.0 (2025-12-16)
 
 ### Features
