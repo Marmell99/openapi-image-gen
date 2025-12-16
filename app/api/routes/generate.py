@@ -70,7 +70,7 @@ async def generate_image(request: ImageRequest, _: None = Depends(verify_token))
     if not urls:
         raise HTTPException(status_code=500, detail="No images generated")
 
-    # OpenWebUI mode: return list with data URI for tool integration
+    # OpenWebUI mode: return markdown with embedded base64 image
     if settings.OPENWEBUI_MODE:
         image_filename = urls[0].split("/")[-1]
         image_path = Path(settings.STORAGE_PATH) / image_filename
@@ -90,7 +90,7 @@ async def generate_image(request: ImageRequest, _: None = Depends(verify_token))
         mime_types = {".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp"}
         mime_type = mime_types.get(ext, "image/png")
 
-        return [f"data:{mime_type};base64,{image_data}"]
+        return f"![Generated Image](data:{mime_type};base64,{image_data})"
 
     # Handle response format
     if request.response_format == "base64":
