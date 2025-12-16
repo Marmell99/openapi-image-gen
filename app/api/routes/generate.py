@@ -23,16 +23,17 @@ router = APIRouter(prefix="/generate", tags=["Image Generation"])
 
 @router.post(
     "",
-    response_model=ImageResponse,
+    response_model=None,
     operation_id="generate_image",
     summary="Generate image",
     description=(
         "Generate an image from a text prompt. "
         "Uses LiteLLM proxy by default for cost tracking, with fallback to direct API calls. "
-        "Supports OpenAI DALL-E and Google Gemini models."
+        "Supports OpenAI DALL-E and Google Gemini models. "
+        "Response format depends on OPENWEBUI_MODE and response_format parameter."
     ),
 )
-async def generate_image(request: ImageRequest, _: None = Depends(verify_token)) -> ImageResponse:
+async def generate_image(request: ImageRequest, _: None = Depends(verify_token)):
     """
     Generate image with standard JSON response.
     """
@@ -68,6 +69,28 @@ async def generate_image(request: ImageRequest, _: None = Depends(verify_token))
     # Return first URL (or could return all URLs)
     if not urls:
         raise HTTPException(status_code=500, detail="No images generated")
+
+    # OpenWebUI mode: return list with data URI for tool integration
+    if settings.OPENWEBUI_MODE:
+        image_filename = urls[0].split("/")[-1]
+        image_path = Path(settings.STORAGE_PATH) / image_filename
+
+        if not image_path.exists():
+            raise HTTPException(status_code=500, detail="Generated image file not found")
+
+        with open(image_path, "rb") as f:
+            image_data = base64.b64encode(f.read()).decode("utf-8")
+
+        # Clean up local file if not saving locally
+        if not settings.SAVE_IMAGES_LOCALLY:
+            with contextlib.suppress(Exception):
+                image_path.unlink()
+
+        ext = image_path.suffix.lower()
+        mime_types = {".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp"}
+        mime_type = mime_types.get(ext, "image/png")
+
+        return [f"data:{mime_type};base64,{image_data}"]
 
     # Handle response format
     if request.response_format == "base64":

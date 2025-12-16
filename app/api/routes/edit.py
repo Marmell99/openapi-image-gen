@@ -165,19 +165,20 @@ async def edit_image(
 
 @router.post(
     "/json",
-    response_model=ImageResponse,
+    response_model=None,
     operation_id="edit_image_json",
     summary="Edit image (JSON)",
     description=(
         "Edit an existing image using a JSON request body. "
         "This endpoint is designed for LLM tool use - provide the image_url "
-        "from a previous generate_image response. Uses prompt-based editing."
+        "from a previous generate_image response. Uses prompt-based editing. "
+        "Response format depends on OPENWEBUI_MODE setting."
     ),
 )
 async def edit_image_json(
     request: ImageEditRequest,
     _: None = Depends(verify_token),
-) -> ImageResponse:
+):
     """
     Edit an image using JSON request body (LLM-friendly endpoint).
     """
@@ -218,7 +219,29 @@ async def edit_image_json(
     if not urls:
         raise HTTPException(status_code=500, detail="No images generated")
 
-    # Return markdown format (same as generate endpoint)
+    # OpenWebUI mode: return list with data URI for tool integration
+    if settings.OPENWEBUI_MODE:
+        image_filename = urls[0].split("/")[-1]
+        image_path = Path(settings.STORAGE_PATH) / image_filename
+
+        if not image_path.exists():
+            raise HTTPException(status_code=500, detail="Edited image file not found")
+
+        with open(image_path, "rb") as f:
+            image_data = base64.b64encode(f.read()).decode("utf-8")
+
+        # Clean up local file if not saving locally
+        if not settings.SAVE_IMAGES_LOCALLY:
+            with contextlib.suppress(Exception):
+                image_path.unlink()
+
+        ext = image_path.suffix.lower()
+        mime_types = {".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp"}
+        mime_type = mime_types.get(ext, "image/png")
+
+        return [f"data:{mime_type};base64,{image_data}"]
+
+    # Return based on MARKDOWN_EMBED_IMAGES setting
     if settings.MARKDOWN_EMBED_IMAGES:
         # Return markdown with embedded base64 data URI
         image_filename = urls[0].split("/")[-1]

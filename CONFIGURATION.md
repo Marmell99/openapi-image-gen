@@ -46,7 +46,7 @@ Complete configuration reference for the Image Generation API.
 **`SAVE_IMAGES_LOCALLY`**
 - Save images to local disk
 - Default: `true`
-- Set to `false` when using `MARKDOWN_EMBED_IMAGES=true` with Open WebUI
+- Set to `false` when using `OPENWEBUI_MODE=true` or `MARKDOWN_EMBED_IMAGES=true`
 - When `false`, images are temporarily written for base64 conversion then deleted
 
 ### Model Defaults
@@ -58,12 +58,24 @@ Complete configuration reference for the Image Generation API.
 
 ### Response Configuration
 
+**`OPENWEBUI_MODE`**
+- Enable Open WebUI tool integration mode
+- Default: `false`
+- When `true`:
+  - Returns `["data:image/png;base64,..."]` (list with data URI)
+  - OpenWebUI extracts this as a file and displays the image
+  - Overrides `response_format` parameter and `MARKDOWN_EMBED_IMAGES`
+  - Works with OpenWebUI's tool response handling
+- When `false`:
+  - Normal API behavior based on `response_format` parameter
+- Requires: OpenWebUI with `ENABLE_CHAT_RESPONSE_BASE64_IMAGE_URL_CONVERSION=true`
+
 **`MARKDOWN_EMBED_IMAGES`**
 - Embed images as base64 data URI in markdown responses
 - Default: `false`
-- When `true`: Returns `![image](data:image/png;base64,...)`
-- When `false`: Returns `![image](http://...)`
-- Set to `true` for Open WebUI integration with `ENABLE_CHAT_RESPONSE_BASE64_IMAGE_URL_CONVERSION`
+- When `true` and `response_format="markdown"`: Returns `{"markdown": "![image](data:image/png;base64,...)"}`
+- When `false` and `response_format="markdown"`: Returns `{"markdown": "![image](http://...)"}`
+- Note: Ignored when `OPENWEBUI_MODE=true`
 
 ### Security
 
@@ -341,3 +353,13 @@ Use after LiteLLM configuration changes.
 - Verify `STORAGE_PATH` has write permissions
 - Check `BASE_URL` matches your deployment
 - For Docker, ensure volume is mounted correctly
+
+## Response Format Reference
+
+| `OPENWEBUI_MODE` | `MARKDOWN_EMBED_IMAGES` | `response_format` | Response |
+|------------------|-------------------------|-------------------|----------|
+| `true` | (ignored) | (ignored) | `["data:image/png;base64,..."]` |
+| `false` | `false` | `url` (default) | `{"image_url": "http://..."}` |
+| `false` | `false` | `base64` | `{"image_base64": "...", "mime_type": "..."}` |
+| `false` | `false` | `markdown` | `{"markdown": "![img](http://...)"}` |
+| `false` | `true` | `markdown` | `{"markdown": "![img](data:...;base64,...)"}` |
