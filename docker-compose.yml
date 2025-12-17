@@ -5,7 +5,7 @@ services:
     build: .
     container_name: image-gen-api
     ports:
-      - "8000:8000"
+      - "5473:8000"
     environment:
       # LiteLLM Configuration (Primary)
       - LITELLM_BASE_URL=${LITELLM_BASE_URL:-}
